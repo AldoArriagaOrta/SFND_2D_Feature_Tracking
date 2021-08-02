@@ -18,26 +18,13 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        // ...
-
-        if (descSource.type() != CV_32F)
+        // make sure that both descriptors matrices are float, otherwise it throws an error
+        if (descSource.type() != CV_32F || descRef.type() != CV_32F )
         { // OpenCV bug workaround : convert binary descriptors to floating point due to a bug in current OpenCV implementation
             descSource.convertTo(descSource, CV_32F);
             descRef.convertTo(descRef, CV_32F);
         }
-
-        // //https://stackoverflow.com/questions/29694490/flann-error-in-opencv-3
-        // if (matcherType == "AKAZE" || matcherType == "ORB"  || matcherType == "BRISK" || matcherType == "BRIEF"  ||  matcherType == "AKAZE" )
-        // {
-        //     cv::FlannBasedMatcher matcher = cv::FlannBasedMatcher(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2));
-        //     //matcher = cv::FlannBasedMatcher(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2));
-        //     //matcher = cv::DescriptorMatcher::create(new cv::flann::LshIndexParams(20, 10, 2));
-        // }
-        // else
-        {
-            matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
-        }
-        
+        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);        
     }
 
     // perform matching task
@@ -54,13 +41,11 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
         double minDescDistRatio = 0.8;
         for (auto it = knn_matches.begin(); it != knn_matches.end(); ++it)
         {
-
             if ((*it)[0].distance < minDescDistRatio * (*it)[1].distance)
             {
                 matches.push_back((*it)[0]);
             }
         }
-        // ...
     }
 }
 
@@ -173,8 +158,7 @@ void detKeypointsHarris(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis
         {
             int response = (int)dst_norm.at<float>(j, i);
             if (response > minResponse)
-            { // only store points above a threshold
-
+            {   // only store points above a threshold
                 cv::KeyPoint newKeyPoint; 
                 newKeyPoint.pt = cv::Point2f(i, j);
                 newKeyPoint.size = 2 * apertureSize;
@@ -196,7 +180,7 @@ void detKeypointsHarris(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis
                     }
                 }
                 if (!bOverlap)
-                {// add new key point if no overlap has been found in previous NMS
+                {   // add new key point if no overlap has been found in previous NMS
                     keypoints.push_back(newKeyPoint); 
                 }
             }
