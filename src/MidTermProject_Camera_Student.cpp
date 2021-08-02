@@ -64,6 +64,14 @@ int main(int argc, const char *argv[])
         frame.cameraImg = imgGray;
         dataBuffer.push_back(frame);
 
+        // I think my implementation is simple enough and uses the functionality already provided by the STL.
+        // Nevertheless, I am sure that there are better ways to implement the ring buffer. 
+
+        if (dataBuffer.size() > dataBufferSize)
+        {
+            dataBuffer.erase(dataBuffer.begin());
+        }
+
         //// EOF STUDENT ASSIGNMENT
         cout << "#1 : LOAD IMAGE INTO BUFFER done" << endl;
 
@@ -71,20 +79,27 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "SHITOMASI";
+        string detectorType = "SIFT"; // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
         if (detectorType.compare("SHITOMASI") == 0)
-        {
+        {   
             detKeypointsShiTomasi(keypoints, imgGray, false);
         }
-        else
+        else if (detectorType.compare("HARRIS") == 0)
         {
-            //...
+            detKeypointsHarris(keypoints, imgGray, false);   
         }
+        // not sure if it is better to use the string.compare() method for the selection of the detectoType
+        else if ( detectorType == "FAST" || detectorType == "BRISK" || detectorType == "ORB" || detectorType =="AKAZE" || detectorType == "SIFT")
+        {
+            detKeypointsModern(keypoints, imgGray, detectorType, false);
+        }
+        // it would be a good idea to add an "else" clause and show an error message in the console
+
         //// EOF STUDENT ASSIGNMENT
 
         //// STUDENT ASSIGNMENT
@@ -93,8 +108,21 @@ int main(int argc, const char *argv[])
         // only keep keypoints on the preceding vehicle
         bool bFocusOnVehicle = true;
         cv::Rect vehicleRect(535, 180, 180, 150);
+
         if (bFocusOnVehicle)
         {
+            vector<cv::KeyPoint> tempKeypoints;    
+            cv::rectangle(imgGray,vehicleRect, cv::Scalar(0, 255, 0), 2, 8, 0);
+
+            for (auto it = keypoints.begin(); it != keypoints.end(); ++it)
+            {
+                if(vehicleRect.x < it->pt.x && it->pt.x < vehicleRect.x + vehicleRect.width && 
+                   vehicleRect.y < it->pt.y && it->pt.y < vehicleRect.y + vehicleRect.height)
+                {
+                    tempKeypoints.push_back(*it);
+                }
+            }
+            keypoints = tempKeypoints;
             // ...
         }
 
@@ -125,7 +153,7 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = "BRISK"; // BRIEF, ORB, FREAK, AKAZE, SIFT
+        string descriptorType = "SIFT"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
 
@@ -140,9 +168,9 @@ int main(int argc, const char *argv[])
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+            string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
             string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
-            string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+            string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
