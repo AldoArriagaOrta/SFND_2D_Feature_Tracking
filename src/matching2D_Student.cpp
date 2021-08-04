@@ -19,7 +19,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
         // make sure that both descriptors matrices are float, otherwise it throws an error
-        if (descSource.type() != CV_32F || descRef.type() != CV_32F )
+        //if (descSource.type() != CV_32F || descRef.type() != CV_32F )
         { // OpenCV bug workaround : convert binary descriptors to floating point due to a bug in current OpenCV implementation
             descSource.convertTo(descSource, CV_32F);
             descRef.convertTo(descRef, CV_32F);
@@ -47,6 +47,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
             }
         }
     }
+    cout << matcherType << " matcher found " << matches.size() << " matches" << endl;
 }
 
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
@@ -60,7 +61,7 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
         int octaves = 3;           // detection octaves (use 0 to do single scale)
         float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
 
-        extractor = cv::BRISK::create(threshold, octaves, patternScale);
+        extractor = cv::BRISK::create   (threshold, octaves, patternScale);
     }
     else if (descriptorType.compare("BRIEF") == 0)
     {
@@ -151,7 +152,7 @@ void detKeypointsHarris(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis
     cv::normalize(dst, dst_norm, 0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
     cv::convertScaleAbs(dst_norm, dst_norm_scaled);
 
-    double maxOverlap = 0.05; // max. permissible overlap between two features in % (for NMS)
+    double maxOverlap = 1.0; // max. permissible overlap between two features in % (for NMS)
     for (size_t j = 0; j < dst_norm.rows; j++)
     {
         for (size_t i = 0; i < dst_norm.cols; i++)

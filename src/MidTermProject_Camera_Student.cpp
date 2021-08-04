@@ -79,7 +79,7 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "BRISK"; // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+        string detectorType = "SHITOMASI"; // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
@@ -93,7 +93,7 @@ int main(int argc, const char *argv[])
         {
             detKeypointsHarris(keypoints, imgGray, false);   
         }
-        // not sure if it is better to use the string.compare() method for the selection of the detectoType
+        // not sure if it is better to use the string.compare() method for the selection of the detectorType
         else if ( detectorType == "FAST" || detectorType == "BRISK" || detectorType == "ORB" || detectorType =="AKAZE" || detectorType == "SIFT")
         {
             detKeypointsModern(keypoints, imgGray, detectorType, false);
@@ -106,7 +106,7 @@ int main(int argc, const char *argv[])
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
 
         // only keep keypoints on the preceding vehicle
-        bool bFocusOnVehicle = false;
+        bool bFocusOnVehicle = true;
         cv::Rect vehicleRect(535, 180, 180, 150);
 
         if (bFocusOnVehicle)
@@ -115,14 +115,16 @@ int main(int argc, const char *argv[])
             cv::rectangle(imgGray,vehicleRect, cv::Scalar(0, 255, 0), 2, 8, 0);
 
             for (auto it = keypoints.begin(); it != keypoints.end(); ++it)
-            {
-                if(vehicleRect.x < it->pt.x && it->pt.x < vehicleRect.x + vehicleRect.width && 
-                   vehicleRect.y < it->pt.y && it->pt.y < vehicleRect.y + vehicleRect.height)
+            {   //alternative for rectangle.contains()
+                // if(vehicleRect.x < it->pt.x && it->pt.x < vehicleRect.x + vehicleRect.width && 
+                //    vehicleRect.y < it->pt.y && it->pt.y < vehicleRect.y + vehicleRect.height)
+                if (vehicleRect.contains(it->pt))
                 {
                     tempKeypoints.push_back(*it);
                 }
             }
             keypoints = tempKeypoints;
+            cout << "Keypoint in preceding vehicle n=" << keypoints.size() << endl;
             // ...
         }
 
@@ -153,7 +155,7 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = "BRIEF"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+        string descriptorType = "SIFT"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
 
@@ -168,8 +170,8 @@ int main(int argc, const char *argv[])
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
-            string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
+            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+            string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG   NOTE: DES_HOG should be used only with SIFT (from our options). Currently not used.
             string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
