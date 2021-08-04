@@ -265,8 +265,8 @@ The combination FAST detector with ORB descriptors gave the fastest execution ti
 
 Similarly, the combinations FAST detector with BRIEF and BRISK descriptors, gave the second and third fastest results, respectively. 
 
-For the sace of discussion, if the execution time requirements are not that strict, the BRISK detector and the BRIEF descriptors combination yielded the highest numbers of matched keypoints (unlike the HARRIS detector in which the overlap % introduced some duplicates). The execution time was 10 times higher than the first choice, however the numbers suggest a higher accuracy (to be proven with appropriate metrics). This option would be the best in applications with higher accuracy requirements.
+For the sake of discussion, if the execution time requirements are not that strict, the BRISK detector and the BRIEF descriptors combination yielded the highest numbers of matched keypoints (unlike the HARRIS detector in which the overlap % introduced some duplicates). The execution time was 10 times higher than the first choice, however the numbers suggest a higher accuracy (to be proven with appropriate metrics). This option would be the best in applications with higher accuracy requirements.
 
 
-The data for all these evaluation steps is available in this [spreadsheet] (https://docs.google.com/spreadsheets/d/1fUYwmnbgy_bgM5UjmhFAjLRoE0F7IIE_x5lqQTK5QV0/edit?usp=sharing) 
+The data for all these evaluation steps is available in this [spreadsheet](https://docs.google.com/spreadsheets/d/1fUYwmnbgy_bgM5UjmhFAjLRoE0F7IIE_x5lqQTK5QV0/edit?usp=sharing) 
 
