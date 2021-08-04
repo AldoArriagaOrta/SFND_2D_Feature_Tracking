@@ -13,10 +13,16 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 
     if (matcherType.compare("MAT_BF") == 0)
     {
-        int normType = cv::NORM_HAMMING;
+        int normType;
         if(descriptorType == "SIFT")
         {
-            int normType = cv::NORM_L2;
+            // Hamming distance cannot be used with SIFT
+            // This discussion as reference: https://answers.opencv.org/question/10046/feature-2d-feature-matching-fails-with-assert-statcpp/
+            normType = cv::NORM_L2;
+        }
+        else
+        {
+            normType = cv::NORM_HAMMING;
         }
         
         matcher = cv::BFMatcher::create(normType, crossCheck);
@@ -83,7 +89,6 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     else if (descriptorType.compare("AKAZE") == 0)
     {
         extractor = cv::AKAZE::create();
-
     }
     else if (descriptorType.compare("SIFT") == 0)
     {
